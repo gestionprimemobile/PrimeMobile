@@ -1187,8 +1187,8 @@ async function loadState(){
     ]);
     [prod,cli,cat,vts,vit,vpg,mov,cxc,abo,gas,cie,perm,cfg].forEach(r=>{ if(r.error) throw r.error; });
 
-    if(prod.data && prod.data.length){
-      DB.productos = prod.data.map(p=>({ id:p.id, codigo:p.codigo, nombre:p.nombre, cat:p.categoria, precio:Number(p.precio), costo:Number(p.costo), stock:p.stock, min:p.stock_minimo, desc:p.descripcion }));
+    if(cfg.data){
+      DB.productos = (prod.data||[]).map(p=>({ id:p.id, codigo:p.codigo, nombre:p.nombre, cat:p.categoria, precio:Number(p.precio), costo:Number(p.costo), stock:p.stock, min:p.stock_minimo, desc:p.descripcion }));
       DB.clientes = (cli.data||[]).map(c=>({ id:c.id, nombre:c.nombre, cedula:c.cedula, telefono:c.telefono, email:c.email, dir:c.direccion }));
       DB.categorias = (cat.data||[]).map(c=>c.nombre);
 
