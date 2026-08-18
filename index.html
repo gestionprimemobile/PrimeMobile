@@ -416,7 +416,7 @@
         <div class="topbar-title" id="topbar-title">📊 Dashboard</div>
       </div>
       <div class="topbar-right">
-        <div class="user-badge" id="user-badge">👑 primemobile</div>
+        <div class="user-badge" id="user-badge">👑 admin</div>
         <button class="btn btn-primary btn-sm" onclick="goTo('facturacion')">➕ Nueva Venta</button>
         <button class="btn btn-outline btn-sm" onclick="logout()" title="Cerrar sesión">🚪</button>
       </div>
@@ -647,12 +647,12 @@
     <!-- PERMISOS (solo Administrador) -->
     <div id="page-permisos" class="page">
       <div class="page-header">
-        <div><div class="page-title">🛡️ Permisos del Usuario Vendedor</div><div class="page-sub">Controla qué puede ver y hacer el usuario <strong>vendedor1</strong> dentro del sistema</div></div>
+        <div><div class="page-title">🛡️ Permisos del Usuario Vendedor</div><div class="page-sub">Controla qué puede ver y hacer el usuario <strong>auravendedora</strong> dentro del sistema</div></div>
         <button class="btn btn-outline btn-sm" onclick="restablecerPermisosVendedor()">↺ Restablecer valores por defecto</button>
       </div>
       <div class="card" style="padding:14px 18px;margin-bottom:18px;background:rgba(214,31,38,.04);border-color:rgba(214,31,38,.2);">
         <div style="font-size:12.5px;color:var(--text2);line-height:1.6;">
-          ℹ️ Estos cambios aplican <strong>solo al rol vendedor</strong> — el administrador (<strong>primemobile</strong>) siempre tiene acceso completo. Los interruptores en rojo/apagado indican funciones que el vendedor <strong>NO</strong> tiene permitidas actualmente. Los cambios se guardan automáticamente.
+          ℹ️ Estos cambios aplican <strong>solo al rol vendedor</strong> — el administrador (<strong>admin</strong>) siempre tiene acceso completo. Los interruptores en rojo/apagado indican funciones que el vendedor <strong>NO</strong> tiene permitidas actualmente. Los cambios se guardan automáticamente.
         </div>
       </div>
       <div id="permisos-container"></div>
@@ -2419,8 +2419,8 @@ function updateClock(){
 // hardcodeados aquí. Se guarda una reserva local con los mismos valores por si
 // la nube no responde (ej. sin internet), para que el login nunca quede roto.
 const USUARIOS_FALLBACK = {
-  'primemobile': { hash: '4d024721f0226fd0b4a70335be353582701004f1b347b34386762926b3e59ceb', role: 'admin',    label: 'Administrador' },
-  'vendedor1':   { hash: 'd17da977067a7f90cc2a0b6aad26246840255f6c62f59f57aa81ee79411ead48', role: 'vendedor', label: 'Vendedor' }
+  'admin':         { hash: '4d024721f0226fd0b4a70335be353582701004f1b347b34386762926b3e59ceb', role: 'admin',    label: 'Administrador' },
+  'auravendedora': { hash: '0c707f89ccbe04c95ee71ee6ee714438d608b0c696fc4f0f80bca9625900434c', role: 'vendedor', label: 'Vendedor' }
 };
 let USUARIOS_CACHE = null;
 async function getUsuarios(){

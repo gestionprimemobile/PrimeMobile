@@ -8,9 +8,9 @@ etc.) y cambiándole:
 - ✅ Logo (extraído de tu archivo de referencia)
 - ✅ Paleta de colores → verde `#15803d` / dorado `#b8860b` (antes rojo/negro)
 - ✅ Datos de facturación → Centro Comercial Los Ejecutivos, Local 23B, Cartagena · WhatsApp 304 302 0341
-- ✅ Usuario admin → `primemobile` (contraseña temporal: `PrimeMobile2026$`)
-- ✅ Usuario vendedor → `vendedor1` (contraseña temporal: `PMVendedor2026$`)
-- ⚠️ **Cambia estas dos contraseñas** apenas puedas — son temporales para el primer arranque.
+- ✅ Usuario admin → `admin` (contraseña: `PrimeMobile2026$`)
+- ✅ Usuario vendedor → `auravendedora` (contraseña: `PMvendedor2026$`)
+- ⚠️ Sigue siendo buena práctica cambiar estas contraseñas periódicamente.
 
 ## Lo que falta (te ayudo a hacerlo cuando me des los accesos)
 
