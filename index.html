@@ -2711,6 +2711,36 @@ function restablecerPermisosVendedor(){
   toast('↺ Permisos restablecidos a los valores por defecto');
 }
 
+// Revisión periódica de permisos para la sesión del vendedor: sin esto,
+// un cambio que hace el admin solo se veía reflejado si el vendedor
+// recargaba la página o volvía a iniciar sesión. Ahora se consulta la
+// nube cada 20s (solo si el rol activo es vendedor) y, si algo cambió,
+// se aplica de inmediato — incluyendo sacarlo de una página a la que
+// ya no tiene acceso.
+async function sincronizarPermisosEnVivo(){
+  if(currentRole!=='vendedor'||!cloudDisponible) return;
+  try{
+    const { data, error } = await supabaseClient.from('permisos_vendedor').select('*');
+    if(error) throw error;
+    const permisosObj = {};
+    (data||[]).forEach(p=>{ permisosObj[p.clave] = p.activo; });
+    const nuevos = {...PERMISOS_DEFAULT_VENDEDOR, ...permisosObj};
+    if(JSON.stringify(nuevos) !== JSON.stringify(DB.permisosVendedor)){
+      DB.permisosVendedor = nuevos;
+      aplicarPermisosRol();
+      const paginaActiva = document.querySelector('.page.active');
+      const idActivo = paginaActiva ? paginaActiva.id.replace('page-','') : null;
+      const permKey = idActivo ? PAGINA_A_PERMISO[idActivo] : null;
+      if(permKey && !puede(permKey)){
+        toast('Un administrador actualizó tus permisos');
+        goTo('dashboard');
+      } else {
+        toast('🔄 Tus permisos se actualizaron');
+      }
+    }
+  } catch(e){ console.error('No se pudo sincronizar permisos en vivo:', e); }
+}
+
 let appStarted = false;
 
 function togglePassVisibility(){
@@ -2993,6 +3023,7 @@ async function init(){
   updateClock();setInterval(updateClock,30000);
   chequearCierresAutomaticos();
   setInterval(chequearCierresAutomaticos,60000);
+  setInterval(sincronizarPermisosEnVivo,20000);
   renderDashboard();
 }
 
