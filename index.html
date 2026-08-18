@@ -432,6 +432,12 @@
   .login-btn.is-loading .btn-label-text { font-size:0; }
   .login-btn.is-loading .btn-label-text::after { font-size:13.5px; }
 
+  /* Ahorro de batería/CPU: cuando la pestaña pasa a segundo plano (cambio de
+     app, bloqueo de pantalla), se pausan todas las animaciones decorativas
+     del login y del boot loader. Vuelven a su punto exacto al regresar. */
+  body.tab-hidden .login-screen *,
+  body.tab-hidden #boot-loader * { animation-play-state: paused !important; }
+
   /* ============================================================ */
   /* MOBILE MENU CONTROLS */
   /* ============================================================ */
@@ -2738,6 +2744,7 @@ async function attemptLogin(){
     await mostrarTransicionAcceso(usuario.role==='admin' ? 'Bienvenido, Administrador' : 'Bienvenido, Vendedor');
     document.getElementById('login-screen').style.display = 'none';
     document.getElementById('app-root').style.display = 'flex';
+    if(window.loginParticles) window.loginParticles.stop();
     if(!appStarted){ appStarted = true; init(); }
     aplicarPermisosRol();
   } else {
@@ -2766,6 +2773,7 @@ function logout(){
   currentUsername = null;
   try{ localStorage.removeItem('ksm_session'); }catch(e){}
   toggleSidebar(false);
+  if(window.loginParticles) window.loginParticles.start();
 }
 
 ['login-user','login-pass'].forEach(id=>{
@@ -2785,6 +2793,7 @@ function logout(){
       currentRole = usuarioGuardado.role;
       currentUsername = sesionGuardada;
       document.getElementById('user-badge').textContent = (usuarioGuardado.role==='admin'?'👑 ':'🛒 ') + sesionGuardada;
+      if(window.loginParticles) window.loginParticles.stop();
       if(!appStarted){ appStarted = true; init(); }
       aplicarPermisosRol();
     }
@@ -2809,10 +2818,37 @@ document.getElementById('login-logo').src = document.querySelector('.logo-img').
     'Verificando integridad de datos',
     'Preparando panel de control'
   ];
+
+  // Recursos: no vale la pena mostrar la animación completa cada vez.
+  // - Si el navegador prefiere menos movimiento, se salta directo.
+  // - Si ya hay una sesión guardada (alguien recargando a mitad de turno),
+  //   se acorta bastante: no tiene sentido hacer esperar 1.7s a un cajero
+  //   que ya inició sesión, muchas veces al día, solo por estética.
+  const prefiereMenosMovimiento = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let sesionPrevia = false;
+  try{ sesionPrevia = !!localStorage.getItem('ksm_session'); }catch(e){}
+  const totalMs = prefiereMenosMovimiento ? 0 : (sesionPrevia ? 450 : 1700);
+
+  function apagarBoot(){
+    // Retira el loader del flujo de render por completo (display:none) para
+    // que sus animaciones CSS dejen de ejecutarse en segundo plano durante
+    // el resto de la jornada — evita gasto innecesario de CPU/batería.
+    if(prefiereMenosMovimiento){
+      boot.style.display = 'none';
+      return;
+    }
+    boot.addEventListener('transitionend', ()=>{ boot.style.display = 'none'; }, { once:true });
+    boot.classList.add('hide');
+  }
+
+  if(totalMs === 0){
+    apagarBoot();
+    return;
+  }
+
   let pct = 0;
   let msgIdx = 0;
   statusEl.innerHTML = mensajes[0] + '<span class="boot-cursor">▌</span>';
-  const totalMs = 1700;
   const stepMs = 16;
   const steps = totalMs / stepMs;
   let step = 0;
@@ -2833,7 +2869,7 @@ document.getElementById('login-logo').src = document.querySelector('.logo-img').
       percentEl.textContent = 100;
       barFill.style.width = '100%';
       statusEl.innerHTML = 'Sistema listo<span class="boot-cursor">▌</span>';
-      setTimeout(()=>{ boot.classList.add('hide'); }, 320);
+      setTimeout(apagarBoot, sesionPrevia ? 120 : 320);
     }
   }, stepMs);
 })();
@@ -2842,15 +2878,20 @@ document.getElementById('login-logo').src = document.querySelector('.logo-img').
 // FONDO ANIMADO DE PARTÍCULAS — pantalla de inicio de sesión
 // Red de puntos conectados que se mueven lentamente y se enlazan
 // entre sí cuando están cerca, con un pulso de color aleatorio.
+// Optimizado: se detiene por completo (sin requestAnimationFrame
+// en segundo plano) cuando el login no está visible o la pestaña
+// está oculta, para no gastar CPU/batería durante toda una jornada
+// de uso en caja.
 // ============================================================
-(function initLoginParticles(){
+window.loginParticles = (function initLoginParticles(){
   const canvas = document.getElementById('login-particles');
-  if(!canvas || !canvas.getContext) return;
+  const noop = { start(){}, stop(){} };
+  if(!canvas || !canvas.getContext) return noop;
   const ctx = canvas.getContext('2d');
-  if(!ctx || typeof ctx.clearRect !== 'function') return; // navegador/entorno sin soporte real de canvas 2D
+  if(!ctx || typeof ctx.clearRect !== 'function') return noop; // navegador/entorno sin soporte real de canvas 2D
   const prefiereMenosMovimiento = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if(prefiereMenosMovimiento) return; // respeta la preferencia de accesibilidad del sistema operativo
-  let w, h, particulas = [], animId = null;
+  if(prefiereMenosMovimiento) return noop; // respeta la preferencia de accesibilidad del sistema operativo
+  let w, h, particulas = [], animId = null, activo = false;
   const DENSIDAD = 9000; // menor = más partículas
   const DIST_MAX = 130;  // distancia máxima para dibujar una línea entre 2 partículas
 
@@ -2867,6 +2908,7 @@ document.getElementById('login-logo').src = document.querySelector('.logo-img').
   }
 
   function tick(){
+    if(!activo) return; // corte inmediato: nada de rAF fantasma en segundo plano
     try{
       if(w && h){
         ctx.clearRect(0,0,w,h);
@@ -2876,7 +2918,7 @@ document.getElementById('login-logo').src = document.querySelector('.logo-img').
           if(p.y<0||p.y>h) p.vy*=-1;
           ctx.beginPath();
           ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
-          ctx.fillStyle = 'rgba(214,31,38,0.55)';
+          ctx.fillStyle = 'rgba(21,128,61,0.55)';
           ctx.fill();
         });
         for(let i=0;i<particulas.length;i++){
@@ -2900,12 +2942,26 @@ document.getElementById('login-logo').src = document.querySelector('.logo-img').
   }
 
   function start(){
-    if(animId) cancelAnimationFrame(animId);
+    if(activo) return;
+    activo = true;
     resize();
     tick();
   }
-  window.addEventListener('resize', ()=>{ resize(); });
+  function stop(){
+    activo = false;
+    if(animId) cancelAnimationFrame(animId);
+    animId = null;
+  }
+  window.addEventListener('resize', ()=>{ if(activo) resize(); });
+  // Pausa automática al ocultar la pestaña (cambio de app, bloqueo de pantalla, etc.)
+  // También pausa las animaciones CSS decorativas del login/boot loader vía clase en <body>.
+  document.addEventListener('visibilitychange', ()=>{
+    document.body.classList.toggle('tab-hidden', document.hidden);
+    if(document.hidden){ stop(); }
+    else if(document.getElementById('login-screen').style.display !== 'none'){ start(); }
+  });
   start();
+  return { start, stop };
 })();
 
 // ============================================================
