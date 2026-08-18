@@ -1097,11 +1097,17 @@ try {
 
 // Sincroniza una tabla completa contra un arreglo local: upsert de todas
 // las filas locales + borra en la nube las que ya no existan localmente.
-async function syncTablaCompleta(tabla, filas, idCol){
+// soloUpsert=true: nunca borra en la nube (para tablas que solo crecen y
+// no tienen función de eliminar en la app — clientes, categorías,
+// movimientos). Sin esto, una sesión con datos desactualizados (ej. el
+// admin con la pestaña abierta desde antes de que el vendedor creara un
+// cliente nuevo) podía borrar en la nube algo creado por otra sesión.
+async function syncTablaCompleta(tabla, filas, idCol, soloUpsert){
   if(filas.length){
     const { error } = await supabaseClient.from(tabla).upsert(filas, { onConflict: idCol });
     if(error) throw error;
   }
+  if(soloUpsert) return;
   const idsLocales = new Set(filas.map(f=>f[idCol]));
   const { data: remotos, error: errSel } = await supabaseClient.from(tabla).select(idCol);
   if(errSel) throw errSel;
@@ -1143,8 +1149,8 @@ async function saveState(){
     // Primero categorías, clientes y productos (referenciados por FK de ventas/movimientos).
     // Si productos falla, ventas/items podrían fallar también por depender del FK — es inevitable,
     // pero ya no bloquea a permisos, cierres, gastos, etc. que no tienen relación con eso.
-    await intentar('categorias', syncTablaCompleta('categorias', DB.categorias.map(nombre=>({nombre})), 'nombre'));
-    await intentar('clientes', syncTablaCompleta('clientes', DB.clientes.map(c=>({id:c.id, nombre:c.nombre, cedula:c.cedula||null, telefono:c.telefono||null, email:c.email||null, direccion:c.dir||null})), 'id'));
+    await intentar('categorias', syncTablaCompleta('categorias', DB.categorias.map(nombre=>({nombre})), 'nombre', true));
+    await intentar('clientes', syncTablaCompleta('clientes', DB.clientes.map(c=>({id:c.id, nombre:c.nombre, cedula:c.cedula||null, telefono:c.telefono||null, email:c.email||null, direccion:c.dir||null})), 'id', true));
     await intentar('productos', syncTablaCompleta('productos', DB.productos.map(p=>({id:p.id, codigo:p.codigo||null, nombre:p.nombre, categoria:p.cat||null, precio:p.precio, costo:p.costo, stock:p.stock, stock_minimo:p.min||0, descripcion:p.desc||null})), 'id'));
     await intentar('ventas', syncTablaCompleta('ventas', filasVentas, 'id'));
     await intentar('venta_items', syncTablaCompleta('venta_items', filasItems, 'id'));
@@ -1154,7 +1160,7 @@ async function saveState(){
     await intentar('abonos_cxc', syncTablaCompleta('abonos_cxc', DB.abonosCxc.map(a=>({id:a.id, cxc_id:a.cxcId, monto:a.monto, metodo:a.metodo, fecha:a.fecha, hora:a.hora||null, usuario:a.usuario||null})), 'id'));
     // El resto de tablas, sin dependencias entre sí ni con lo anterior — cada una vive o muere sola.
     await Promise.all([
-      intentar('movimientos', syncTablaCompleta('movimientos', DB.movimientos.map(m=>({id:m.id, fecha:m.fecha, hora:m.hora, producto_id:(m.prodId && DB.productos.some(p=>p.id===m.prodId)) ? m.prodId : null, producto_nombre:m.producto, tipo:m.tipo, cantidad:m.cantidad, referencia:m.ref||null, usuario:m.user||null})), 'id')),
+      intentar('movimientos', syncTablaCompleta('movimientos', DB.movimientos.map(m=>({id:m.id, fecha:m.fecha, hora:m.hora, producto_id:(m.prodId && DB.productos.some(p=>p.id===m.prodId)) ? m.prodId : null, producto_nombre:m.producto, tipo:m.tipo, cantidad:m.cantidad, referencia:m.ref||null, usuario:m.user||null})), 'id', true)),
       intentar('gastos', syncTablaCompleta('gastos', DB.gastos.map(g=>({id:g.id, descripcion:g.descripcion, monto:g.monto, fecha:g.fecha, hora:g.hora})), 'id')),
       intentar('cierres', syncTablaCompleta('cierres', DB.cierres.map(c=>({id:c.id, fecha:c.fecha, cerrado_en:c.cerradoEn||null, tipo:c.tipo, efectivo:c.efectivo||0, transferencia:c.transferencia||0, tarjeta:c.tarjeta||0, credito:c.credito||0, gastos:c.gastos||0, cobros_cartera:c.cobrosCartera||0, neto_caja:c.netoCaja||0, caja_principal:c.cajaPrincipal||0, ventas_count:c.ventasCount||0, total_ventas:c.totalVentas||0})), 'id')),
       intentar('permisos_vendedor', savePermisos()),
