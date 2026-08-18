@@ -266,9 +266,14 @@
   @keyframes orbFloat { 0%,100%{transform:translate(0,0) scale(1);} 50%{transform:translate(25px,-20px) scale(1.08);} }
 
   .login-box-wrap { position:relative; z-index:1; }
-  .login-box { position:relative; z-index:1; background:rgba(20,20,20,0.92); backdrop-filter:blur(10px); border:1px solid rgba(214,31,38,.35); border-radius:22px; padding:36px 30px 30px; width:100%; max-width:350px; box-shadow:0 25px 70px rgba(0,0,0,0.55), 0 0 40px rgba(214,31,38,.15); display:flex; flex-direction:column; align-items:center; animation:loginRise .6s cubic-bezier(.2,.8,.2,1) both; overflow:hidden; }
+  .login-box { position:relative; z-index:1; background:rgba(20,20,20,0.92); backdrop-filter:blur(10px); border:1px solid rgba(21,128,61,.4); border-radius:22px; padding:36px 30px 30px; width:100%; max-width:350px; box-shadow:0 25px 70px rgba(0,0,0,0.55), 0 0 40px rgba(184,134,11,.15); display:flex; flex-direction:column; align-items:center; animation:loginRise .6s cubic-bezier(.2,.8,.2,1) both; overflow:hidden; }
+  .login-box-border { position:absolute; inset:-1px; border-radius:22px; padding:1px; pointer-events:none; z-index:0;
+    background:conic-gradient(from 0deg, var(--accent), var(--accent3), transparent 35%, transparent 65%, var(--accent));
+    -webkit-mask:linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite:xor; mask-composite:exclude;
+    animation:bootSpin 5s linear infinite; opacity:.55; }
   @keyframes loginRise { from{ opacity:0; transform:translateY(26px) scale(.97); } to{ opacity:1; transform:translateY(0) scale(1); } }
-  .login-scanline { position:absolute; left:0; right:0; top:0; height:2px; background:linear-gradient(90deg,transparent,var(--accent),#fff,var(--accent),transparent); opacity:0; animation:scanMove 3.2s ease-in-out infinite; pointer-events:none; box-shadow:0 0 12px 1px rgba(214,31,38,.8); }
+  .login-scanline { position:absolute; left:0; right:0; top:0; height:2px; background:linear-gradient(90deg,transparent,var(--accent3),#fff,var(--accent),transparent); opacity:0; animation:scanMove 3.2s ease-in-out infinite; pointer-events:none; box-shadow:0 0 12px 1px rgba(184,134,11,.8); z-index:2; }
   @keyframes scanMove { 0%{ top:0; opacity:0; } 8%{ opacity:.85; } 92%{ opacity:.85; } 100%{ top:100%; opacity:0; } }
 
   .login-logo-wrap { position:relative; display:flex; align-items:center; justify-content:center; width:104px; height:104px; margin-bottom:14px; }
@@ -276,7 +281,7 @@
   .login-logo-ring:nth-child(2) { animation-delay:1s; }
   .login-logo-ring:nth-child(3) { animation-delay:2s; }
   @keyframes radarPing { 0%{ width:104px; height:104px; opacity:.75; } 100%{ width:220px; height:220px; opacity:0; } }
-  .login-logo { position:relative; z-index:1; width:104px; height:auto; border-radius:10px; box-shadow:0 0 24px rgba(214,31,38,.35); animation:logoPop .7s .1s cubic-bezier(.2,.8,.2,1) both; }
+  .login-logo { position:relative; z-index:1; width:104px; height:auto; border-radius:10px; box-shadow:0 0 24px rgba(184,134,11,.35); animation:logoPop .7s .1s cubic-bezier(.2,.8,.2,1) both; }
   @keyframes logoPop { from{ opacity:0; transform:scale(.7); } to{ opacity:1; transform:scale(1); } }
 
   .login-welcome { font-size:11px; font-weight:700; letter-spacing:3px; text-transform:uppercase; color:#9a9a9a; animation:fadeInSlow .7s .2s both; }
@@ -287,16 +292,145 @@
   .login-box .form-group { width:100%; margin-bottom:13px; animation:fadeInSlow .7s .4s both; }
   .login-box label { color:#c9c9c9; }
   .login-box input { background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.15); color:#fff; }
-  .login-box input:focus { border-color:var(--accent); box-shadow:0 0 0 3px rgba(214,31,38,.2); }
+  .login-box input:focus { border-color:var(--accent); box-shadow:0 0 0 3px rgba(21,128,61,.25); }
   .pass-field-wrap { position:relative; }
   .pass-field-wrap input { padding-right:38px; }
   .pass-toggle-btn { position:absolute; right:9px; top:50%; transform:translateY(-50%); background:none; border:none; cursor:pointer; font-size:15px; color:#9a9a9a; padding:4px; display:flex; align-items:center; justify-content:center; }
   .pass-toggle-btn:hover { color:var(--accent); }
   .login-error { color:#ff8a8a; font-size:12px; font-weight:700; background:rgba(239,68,68,0.12); border:1px solid rgba(239,68,68,0.3); border-radius:8px; padding:8px 11px; margin:-2px 0 13px; width:100%; text-align:center; }
-  .login-btn { width:100%; justify-content:center; padding:11px; font-size:13.5px; animation:fadeInSlow .7s .46s both; position:relative; overflow:hidden; box-shadow:0 4px 20px rgba(214,31,38,.4); }
+  .login-btn { width:100%; justify-content:center; padding:11px; font-size:13.5px; animation:fadeInSlow .7s .46s both; position:relative; overflow:hidden; box-shadow:0 4px 20px rgba(21,128,61,.45); display:flex; align-items:center; }
   .login-btn::after { content:''; position:absolute; top:0; left:-60%; width:40%; height:100%; background:linear-gradient(120deg,transparent,rgba(255,255,255,.35),transparent); transform:skewX(-20deg); animation:btnSheen 2.8s ease-in-out infinite; }
   @keyframes btnSheen { 0%{ left:-60%; } 45%,100%{ left:130%; } }
   .login-footer { font-size:10px; color:#8a8a8a; margin-top:20px; letter-spacing:.4px; text-align:center; animation:fadeInSlow .7s .5s both; }
+
+  /* ============================================================ */
+  /* BOOT LOADER — pantalla de arranque futurista */
+  /* ============================================================ */
+  #boot-loader {
+    position:fixed; inset:0; z-index:5000; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    background:
+      radial-gradient(circle at 50% 40%, rgba(21,128,61,.18), transparent 55%),
+      radial-gradient(circle at 80% 80%, rgba(184,134,11,.12), transparent 50%),
+      #060807;
+    overflow:hidden;
+    transition:opacity .6s ease, visibility .6s ease;
+  }
+  #boot-loader.hide { opacity:0; visibility:hidden; pointer-events:none; }
+  .boot-grid {
+    position:absolute; inset:0;
+    background-image:
+      linear-gradient(rgba(21,128,61,.14) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(21,128,61,.14) 1px, transparent 1px);
+    background-size:36px 36px;
+    -webkit-mask-image:radial-gradient(circle at 50% 45%, #000 0%, transparent 72%);
+    mask-image:radial-gradient(circle at 50% 45%, #000 0%, transparent 72%);
+    animation:gridDrift 14s linear infinite;
+  }
+  @keyframes gridDrift { from{ background-position:0 0,0 0; } to{ background-position:36px 36px,36px 36px; } }
+  .boot-scan {
+    position:absolute; left:0; right:0; height:120px; top:-120px;
+    background:linear-gradient(180deg, transparent, rgba(184,134,11,.18), transparent);
+    animation:bootScanMove 3.4s ease-in-out infinite;
+    pointer-events:none;
+  }
+  @keyframes bootScanMove { 0%{ top:-120px; } 100%{ top:100%; } }
+  .boot-core {
+    position:relative; width:190px; height:190px; display:flex; align-items:center; justify-content:center; z-index:1;
+  }
+  .boot-ring { position:absolute; inset:0; border-radius:50%; }
+  .boot-ring-outer {
+    border:2px solid transparent;
+    border-top-color:var(--accent3);
+    border-right-color:rgba(184,134,11,.35);
+    animation:bootSpin 2.1s linear infinite;
+  }
+  .boot-ring-mid {
+    inset:16px;
+    border:2px dashed rgba(21,128,61,.55);
+    animation:bootSpin 3.6s linear infinite reverse;
+  }
+  .boot-ring-inner {
+    inset:34px;
+    border:3px solid transparent;
+    border-bottom-color:var(--accent);
+    border-left-color:rgba(21,128,61,.4);
+    animation:bootSpin 1.4s cubic-bezier(.5,0,.5,1) infinite;
+  }
+  @keyframes bootSpin { to{ transform:rotate(360deg); } }
+  .boot-orbit-dot {
+    position:absolute; inset:0; animation:bootSpin 2.1s linear infinite;
+  }
+  .boot-orbit-dot::after {
+    content:''; position:absolute; top:-4px; left:50%; width:8px; height:8px; margin-left:-4px; border-radius:50%;
+    background:var(--accent3); box-shadow:0 0 12px 3px rgba(184,134,11,.75);
+  }
+  .boot-core-glow {
+    position:absolute; inset:56px; border-radius:50%;
+    background:radial-gradient(circle, rgba(21,128,61,.5), transparent 70%);
+    animation:bootPulse 1.8s ease-in-out infinite;
+  }
+  @keyframes bootPulse { 0%,100%{ transform:scale(.85); opacity:.6; } 50%{ transform:scale(1.15); opacity:1; } }
+  .boot-percent {
+    position:relative; z-index:1; font-family:'Courier New',monospace; font-size:26px; font-weight:800; color:#fff;
+    text-shadow:0 0 16px rgba(184,134,11,.7);
+    letter-spacing:1px;
+  }
+  .boot-percent::after { content:'%'; font-size:15px; opacity:.7; margin-left:1px; }
+  .boot-brand {
+    margin-top:26px; font-size:20px; font-weight:900; letter-spacing:2px; color:#fff; z-index:1;
+    background:linear-gradient(100deg,#fff 0%,var(--accent3) 25%,#fff 50%,var(--accent) 75%,#fff 100%);
+    background-size:250% auto; -webkit-background-clip:text; background-clip:text; color:transparent;
+    animation:shimmerText 3.2s linear infinite;
+  }
+  .boot-status {
+    margin-top:10px; font-size:10.5px; letter-spacing:.22em; text-transform:uppercase; color:#8fae9a; z-index:1;
+    font-family:'Courier New',monospace;
+  }
+  .boot-status::after { content:''; display:inline-block; width:6px; }
+  .boot-status .boot-cursor { animation:bootBlink 1s step-end infinite; color:var(--accent3); }
+  @keyframes bootBlink { 0%,49%{ opacity:1; } 50%,100%{ opacity:0; } }
+  .boot-bar-track {
+    margin-top:18px; width:220px; height:3px; border-radius:3px; background:rgba(255,255,255,.08); overflow:hidden; z-index:1;
+  }
+  .boot-bar-fill {
+    height:100%; width:0%; border-radius:3px;
+    background:linear-gradient(90deg,var(--accent),var(--accent3));
+    box-shadow:0 0 10px rgba(184,134,11,.6);
+    transition:width .18s linear;
+  }
+
+  /* ============================================================ */
+  /* TRANSITION LOADER — al iniciar sesión con éxito */
+  /* ============================================================ */
+  #transition-loader {
+    position:fixed; inset:0; z-index:4500; display:none; align-items:center; justify-content:center; flex-direction:column;
+    background:radial-gradient(circle at 50% 45%, rgba(21,128,61,.16), transparent 60%), rgba(6,8,7,.97);
+    backdrop-filter:blur(4px);
+    animation:fadeInSlow .25s both;
+  }
+  #transition-loader.show { display:flex; }
+  .tl-ring-wrap { position:relative; width:96px; height:96px; }
+  .tl-ring {
+    position:absolute; inset:0; border-radius:50%;
+    border:3px solid rgba(255,255,255,.08);
+    border-top-color:var(--accent);
+    border-right-color:var(--accent3);
+    animation:bootSpin 1s cubic-bezier(.5,0,.5,1) infinite;
+  }
+  .tl-ring2 { inset:14px; border-width:2px; border-top-color:var(--accent3); border-right-color:transparent; animation:bootSpin 1.6s linear infinite reverse; }
+  .tl-text { margin-top:18px; font-size:12px; letter-spacing:.18em; text-transform:uppercase; color:#cfe8d8; font-weight:700; }
+
+  /* Botón de login: estado de carga */
+  .login-btn.is-loading { pointer-events:none; opacity:.85; }
+  .login-btn .btn-spinner {
+    display:none; width:16px; height:16px; border-radius:50%;
+    border:2px solid rgba(255,255,255,.35); border-top-color:#fff;
+    animation:bootSpin .7s linear infinite; margin-right:8px;
+  }
+  .login-btn.is-loading .btn-spinner { display:inline-block; }
+  .login-btn.is-loading .btn-label-text::after { content:'Verificando…'; }
+  .login-btn.is-loading .btn-label-text { font-size:0; }
+  .login-btn.is-loading .btn-label-text::after { font-size:13.5px; }
 
   /* ============================================================ */
   /* MOBILE MENU CONTROLS */
@@ -347,6 +481,32 @@
 </head>
 <body>
 
+<!-- BOOT LOADER — animación de arranque futurista -->
+<div id="boot-loader">
+  <div class="boot-grid"></div>
+  <div class="boot-scan"></div>
+  <div class="boot-core">
+    <div class="boot-ring boot-ring-outer"></div>
+    <div class="boot-ring boot-ring-mid"></div>
+    <div class="boot-ring boot-ring-inner"></div>
+    <div class="boot-orbit-dot"></div>
+    <div class="boot-core-glow"></div>
+    <div class="boot-percent" id="boot-percent">0</div>
+  </div>
+  <div class="boot-brand">PRIME MOBILE</div>
+  <div class="boot-bar-track"><div class="boot-bar-fill" id="boot-bar-fill"></div></div>
+  <div class="boot-status" id="boot-status">Inicializando sistema<span class="boot-cursor">▌</span></div>
+</div>
+
+<!-- TRANSITION LOADER — al validar acceso -->
+<div id="transition-loader">
+  <div class="tl-ring-wrap">
+    <div class="tl-ring"></div>
+    <div class="tl-ring tl-ring2"></div>
+  </div>
+  <div class="tl-text" id="tl-text">Accediendo al sistema…</div>
+</div>
+
 <!-- LOGIN SCREEN -->
 <div class="login-screen" id="login-screen">
   <canvas id="login-particles"></canvas>
@@ -354,6 +514,7 @@
   <div class="login-orb login-orb-2"></div>
   <div class="login-box-wrap">
   <div class="login-box">
+    <div class="login-box-border"></div>
     <div class="login-scanline"></div>
     <div class="login-logo-wrap">
       <div class="login-logo-ring"></div>
@@ -371,7 +532,7 @@
         <button type="button" class="pass-toggle-btn" id="pass-toggle-btn" onclick="togglePassVisibility()" aria-label="Mostrar contraseña"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z"/><circle cx="12" cy="12" r="3"/></svg></button>
       </div>
     </div>
-    <button class="btn btn-primary login-btn" onclick="attemptLogin()">Ingresar</button>
+    <button class="btn btn-primary login-btn" id="login-btn" onclick="attemptLogin()"><span class="btn-spinner"></span><span class="btn-label-text">Ingresar</span></button>
     <div class="login-footer">© Prime Mobile</div>
   </div>
   </div>
@@ -2560,23 +2721,40 @@ async function attemptLogin(){
   const u = document.getElementById('login-user').value.trim();
   const p = document.getElementById('login-pass').value;
   const err = document.getElementById('login-error');
+  const loginBtn = document.getElementById('login-btn');
+  loginBtn.classList.add('is-loading');
+  const tMinSpinner = new Promise(res=>setTimeout(res, 420));
   const USERS = await getUsuarios();
   const usuario = USERS[u];
   const hashIngresado = usuario ? await sha256Hex(p) : null;
+  await tMinSpinner;
+  loginBtn.classList.remove('is-loading');
   if(usuario && hashIngresado === usuario.hash){
     err.style.display = 'none';
-    document.getElementById('login-screen').style.display = 'none';
-    document.getElementById('app-root').style.display = 'flex';
     currentRole = usuario.role;
     currentUsername = u;
     document.getElementById('user-badge').textContent = (usuario.role==='admin'?'👑 ':'🛒 ') + u;
     try{ localStorage.setItem('ksm_session', u); }catch(e){}
+    await mostrarTransicionAcceso(usuario.role==='admin' ? 'Bienvenido, Administrador' : 'Bienvenido, Vendedor');
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('app-root').style.display = 'flex';
     if(!appStarted){ appStarted = true; init(); }
     aplicarPermisosRol();
   } else {
     err.style.display = 'block';
     document.getElementById('login-pass').value = '';
   }
+}
+
+// Loader circular futurista mostrado brevemente al validar el acceso
+function mostrarTransicionAcceso(mensaje){
+  return new Promise(resolve=>{
+    const tl = document.getElementById('transition-loader');
+    const tlText = document.getElementById('tl-text');
+    tlText.textContent = mensaje || 'Accediendo al sistema…';
+    tl.classList.add('show');
+    setTimeout(()=>{ tl.classList.remove('show'); resolve(); }, 850);
+  });
 }
 
 function logout(){
@@ -2615,6 +2793,50 @@ function logout(){
 
 // Reusa el mismo logo (base64) ya cargado en el sidebar, sin duplicarlo
 document.getElementById('login-logo').src = document.querySelector('.logo-img').src;
+
+// ============================================================
+// BOOT LOADER — secuencia de arranque futurista con círculo de carga
+// ============================================================
+(function bootSequence(){
+  const boot = document.getElementById('boot-loader');
+  const percentEl = document.getElementById('boot-percent');
+  const barFill = document.getElementById('boot-bar-fill');
+  const statusEl = document.getElementById('boot-status');
+  const mensajes = [
+    'Inicializando sistema',
+    'Conectando con la base de datos',
+    'Cargando módulos de inventario',
+    'Verificando integridad de datos',
+    'Preparando panel de control'
+  ];
+  let pct = 0;
+  let msgIdx = 0;
+  statusEl.innerHTML = mensajes[0] + '<span class="boot-cursor">▌</span>';
+  const totalMs = 1700;
+  const stepMs = 16;
+  const steps = totalMs / stepMs;
+  let step = 0;
+  const timer = setInterval(()=>{
+    step++;
+    // avance no lineal: rápido al inicio, se frena cerca del final para dar sensación "real"
+    const t = step / steps;
+    pct = Math.min(100, Math.round(100 * (1 - Math.pow(1 - t, 2))));
+    percentEl.textContent = pct;
+    barFill.style.width = pct + '%';
+    const nextMsgIdx = Math.min(mensajes.length - 1, Math.floor((pct / 100) * mensajes.length));
+    if(nextMsgIdx !== msgIdx){
+      msgIdx = nextMsgIdx;
+      statusEl.innerHTML = mensajes[msgIdx] + '<span class="boot-cursor">▌</span>';
+    }
+    if(step >= steps){
+      clearInterval(timer);
+      percentEl.textContent = 100;
+      barFill.style.width = '100%';
+      statusEl.innerHTML = 'Sistema listo<span class="boot-cursor">▌</span>';
+      setTimeout(()=>{ boot.classList.add('hide'); }, 320);
+    }
+  }, stepMs);
+})();
 
 // ============================================================
 // FONDO ANIMADO DE PARTÍCULAS — pantalla de inicio de sesión
